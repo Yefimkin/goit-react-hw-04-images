@@ -1,41 +1,29 @@
-import React from "react";
-import styled from "styled-components";
-import PropTypes from "prop-types";
+import PropTypes from 'prop-types';
+import style from './ImageGalleryItem.module.css';
 
-const StyledImageGalleryItem = styled.li`
-	border-radius: 2px;
-	box-shadow: 0px 1px 3px 0px rgba(0, 0, 0, 0.2),
-		0px 1px 1px 0px rgba(0, 0, 0, 0.14), 0px 2px 1px -1px rgba(0, 0, 0, 0.12);
-`;
-
-const StyledImageGalleryItemImage = styled.img`
-	width: 100%;
-	height: 260px;
-	object-fit: cover;
-	transition: transform 250ms cubic-bezier(0.4, 0, 0.2, 1);
-	&:hover {
-		transform: scale(1.03);
-		cursor: zoom-in;
-	}
-`;
-
-const ImageGalleryItem = ({ imageUrl, id, onClick }) => {
-	return (
-		<StyledImageGalleryItem>
-			<StyledImageGalleryItemImage
-				id={id}
-				src={imageUrl}
-				alt="Is not available"
-				onClick={onClick}
-			/>
-		</StyledImageGalleryItem>
-	);
+export const ImageGalleryItem = ({
+  smallImage,
+  largeImage,
+  alt,
+  onImageClick,
+}) => {
+  return (
+    <li>
+      <img
+        src={smallImage}
+        alt={alt}
+        className={style.imageItem}
+        data-original-img={largeImage}
+        data-alt={alt}
+        onClick={e => onImageClick(e)}
+      />
+    </li>
+  );
 };
 
-export default ImageGalleryItem;
-
 ImageGalleryItem.propTypes = {
-	imageUrl: PropTypes.string,
-	id: PropTypes.number.isRequired,
-	onClick: PropTypes.func.isRequired,
+  smallImage: PropTypes.string.isRequired,
+  largeImage: PropTypes.string.isRequired,
+  alt: PropTypes.string.isRequired,
+  onImageClick: PropTypes.func.isRequired,
 };
