@@ -1,11 +1,8 @@
-import React, { Component } from "react";
+import { useState } from 'react';
 import styled from "styled-components";
 import PropTypes from "prop-types";
 
 import { BsSearch } from 'react-icons/bs';
-
-
-
 
 const StyledSearchBar = styled.header`
 	top: 0;
@@ -69,43 +66,41 @@ const StyledSearchFormItem = styled.input`
 `;
 
 
-export default class SearchBar extends Component {
-	state = { inputValue: "" };
+function Searchbar({ onHandleSubmit }) {
+  const [query, setQuery] = useState('');
 
-	handleChange = (event) => {
-		this.setState({ inputValue: event.target.value });
-	};
+  const onSubmit = event => {
+    event.preventDefault();
+    if (query.trim() === '') {
+		return;
+    }
+    onHandleSubmit(query);
+    setQuery('');
+  };
 
-	handleSubmit = (event) => {
-		event.preventDefault();
-		if (this.state.inputValue.trim() === "") {
-			alert('Please enter search query');
-      		return;
-		}
-		this.props.onSubmit(this.state.inputValue);
-	};
-
-	render() {
+	
 		return (
 			<StyledSearchBar>
-				<StyledSearchForm onSubmit={this.handleSubmit}>
+				<StyledSearchForm onSubmit={onSubmit}>
 					<StyledSearchFormButton type="submit">
 						<BsSearch />
 					</StyledSearchFormButton>
 
 					<StyledSearchFormItem
 						type="text"
-						value={this.state.inputValue}
-						onChange={this.handleChange}
+						value={query}
+						onChange={({ target }) => setQuery(target.value)}
 						placeholder="Search images and photos"
 					/>
 				</StyledSearchForm>
 			</StyledSearchBar>
 		);
-	}
+	
 }
 
-SearchBar.propTypes = { onSubmit: PropTypes.func.isRequired };
+Searchbar.propTypes = { onSubmit: PropTypes.func.isRequired };
+
+export default Searchbar;
 
 
 

@@ -1,92 +1,93 @@
-import React, { Component } from 'react';
+import { useState, useEffect } from 'react';
+import { Container } from './Container/Container';
 import SearchBar from './Searchbar/Searchbar';
 import ImageSearchApi from '../services/imageSearchApi';
 import ImageGallery from './ImageGallery/ImageGallery.js';
 import Button from './Button/Button';
 import Loader from './Loader/Loader';
 import Modal from './Modal/Modal';
-import AppStyled from './App.styled';
 
-export default class App extends Component {
-  state = {
-    pictures: [],
-    isLoading: false,
-    largeImageUrl: '',
-    showModal: false,
-    page: 1,
-    searchQuery: '',
-    error: false,
-    shouldScroll: false,
+function App() {
+  const [query, setQuery] = useState('');
+  const [images, setImages] = useState([]);
+  const [largeImageURL, setLargeImageURL] = useState('');
+  const [page, setPage] = useState(1);
+  const [error, setError] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [showModal, setShowModal] = useState(false);
+
+  useEffect(() => {
+    if (!query) return;
+    const fetchImages = async () => {
+      try {
+        const request = await ImageSearchApi(query, page);
+        if (request.length === 0) {
+          return setError(`No results were found for ${query}!`);
+        }
+        setImages(prevImages => [...prevImages, ...request]);
+      } catch (error) {
+        setError('Something went wrong. Try again.');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchImages();
+  }, [page, query]);
+
+  const searchImages = newSearch => {
+    setQuery(newSearch);
+    setImages([]);
+    setPage(1);
+    setError(null);
+    setIsLoading(true);
   };
 
-  componentDidUpdate(_, prevState) {
-    const prevQuery = prevState.searchQuery;
-    const nextQuery = this.state.searchQuery;
-    if (prevQuery !== nextQuery || prevState.page !== this.state.page) {
-      this.fetchPictures();
-    }
-    if (this.state.shouldScroll === true) {
-      window.scrollTo({
-        top: document.documentElement.scrollHeight,
+  const onLoadMore = () => {
+    setIsLoading(true);
+    setPage(prevPage => prevPage + 1);
+    scrollPage();
+  };
+
+  const onOpenModal = e => {
+    setLargeImageURL(e.target.dataset.source);
+    toggleModal();
+  };
+
+  const toggleModal = () => {
+    setShowModal(!showModal);
+  };
+
+  const scrollPage = () => {
+    setTimeout(() => {
+      window.scrollBy({
+        top: document.documentElement.clientHeight - 160,
         behavior: 'smooth',
       });
-    }
-  }
-
-  fetchPictures = () => {
-    const { searchQuery, page } = this.state;
-    this.setState({ isLoading: true });
-    ImageSearchApi.fetchPicturesWithQuery(searchQuery, page)
-      .then(pictures =>
-        this.setState(prevState => ({
-          pictures: [...prevState.pictures, ...pictures],
-        }))
-      )
-      .catch(error => this.setState({ error: true }))
-      .finally(() => this.setState({ isLoading: false }));
+    }, 800);
   };
 
-  handleSearchFormSubmit = query => {
-    if (this.state.searchQuery !== query) {
-      this.setState({
-        searchQuery: query,
-        page: 1,
-        pictures: [],
-      });
-    }
-  };
+  return (
+    <Container>
+      <SearchBar onHandleSubmit={searchImages} />
 
-  toggleModalImg = largeImageUrl => {
-    this.setState({ largeImageUrl: largeImageUrl });
-    this.setState({ shouldScroll: false });
-    this.setState({ showModal: !this.state.showModal });
-  };
+      {error && <p>Whoops, something went wrong</p>}
 
-  handleButton = () => {
-    this.setState(prevState => prevState + 1);
-  };
+      {images.length > 0 && !error && (
+        <ImageGallery images={images} onOpenModal={onOpenModal} />
+      )}
 
-  render() {
-    const { pictures, isLoading, error, showModal, largeImageUrl } = this.state;
+      {isLoading && <Loader />}
 
-    return (
-      <AppStyled>
-        {error && <p>Whoops, something went wrong</p>}
-        <SearchBar onSubmit={this.handleSearchFormSubmit}></SearchBar>
-        {pictures.length > 0 && (
-          <ImageGallery
-            pictures={pictures}
-            onClose={this.toggleModalImg}
-          ></ImageGallery>
-        )}
-        {showModal && (
-          <Modal onClose={this.toggleModalImg} largeImageUrl={largeImageUrl} />
-        )}
-        {pictures.length > 0 && !isLoading && (
-          <Button type="button" onClick={this.handleButton}></Button>
-        )}
-        {isLoading && <Loader />}
-      </AppStyled>
-    );
-  }
+      {!isLoading && images.length >= 12 && !error && (
+        <Button onLoadMore={onLoadMore} />
+      )}
+
+      {showModal && (
+        <Modal onToggleModal={toggleModal} largeImageURL={largeImageURL} />
+      )}
+    </Container>
+  );
 }
+
+export default App;
