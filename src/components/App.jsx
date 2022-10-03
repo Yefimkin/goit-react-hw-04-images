@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Container } from './Container/Container';
-import { Searchbar } from './Searchbar/Searchbar';
+import { Search } from './Search/Search';
 import { ImageGallery } from './ImageGallery/ImageGallery';
 import { Button } from './Button/Button';
 import { Modal } from './Modal/Modal';
@@ -72,7 +72,7 @@ export const App = () => {
 
   return (
     <Container>
-      <Searchbar onSubmit={handleSubmitForm} />
+      <Search onSubmit={handleSubmitForm} />
       <ImageGallery images={images} onImageClick={handleImageClick} />
       {isLoading && <Loader />}
       {canLoadMore && <Button loadMode={handleBtnClick} />}
