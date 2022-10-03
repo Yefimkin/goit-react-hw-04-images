@@ -1,9 +1,9 @@
 import PropTypes from 'prop-types';
 import { BsSearch } from 'react-icons/bs';
 
-import style from './SearchBar.module.css';
+import style from './Searchbar.module.css';
 
-export const SearchBar = ({ onSubmit }) => {
+export const Searchbar = ({ onSubmit }) => {
   const handleSubmit = event => {
     event.preventDefault();
 
@@ -36,6 +36,6 @@ export const SearchBar = ({ onSubmit }) => {
   );
 };
 
-SearchBar.propTypes = {
+Searchbar.propTypes = {
   onSubmit: PropTypes.func.isRequired,
 };
