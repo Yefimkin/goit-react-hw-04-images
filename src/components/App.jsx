@@ -57,13 +57,13 @@ export const App = () => {
     setPage(prevState => prevState + 1);
   };
 
-  const handleImageClick = e => {
-    setOriginalImageUrl(e.currentTarget.dataset.originalImg);
-    setImageAlt(e.currentTarget.dataset.alt);
+  const handleImageClick = event => {
+    setOriginalImageUrl(event.currentTarget.dataset.originalImg);
+    setImageAlt(event.currentTarget.dataset.alt);
   };
 
-  const closeModal = e => {
-    if (e.target === e.currentTarget || e.key === 'Escape') {
+  const closeModal = event => {
+    if (event.target === event.currentTarget || event.key === 'Escape') {
       setOriginalImageUrl('');
     }
   };

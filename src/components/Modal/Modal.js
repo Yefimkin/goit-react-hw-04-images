@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import { useEffect } from 'react';
-import s from './Modal.module.css';
+import styles from './Modal.module.css';
 
 export const Modal = ({ url, alt, closeModal }) => {
   useEffect(() => {
@@ -12,10 +12,10 @@ export const Modal = ({ url, alt, closeModal }) => {
   }, [closeModal]);
 
   return (
-    <div className={s.Overlay} onClick={e => closeModal(e)}>
+    <div className={styles.overlay} onClick={event => closeModal(event)}>
       (
       <div>
-        <img src={url} alt={alt} className={s.Modal} />
+        <img src={url} alt={alt} className={styles.modal} />
       </div>
     </div>
   );
